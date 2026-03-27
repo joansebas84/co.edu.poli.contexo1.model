@@ -33,6 +33,9 @@ public abstract class Persona {
         return calcularImc();
     }
 
+    // Método abstracto: cada subclase debe dar su propia implementación
+    public abstract String obtenerInfo();
+
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
 

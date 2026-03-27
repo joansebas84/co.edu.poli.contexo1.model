@@ -1,23 +1,17 @@
 package co.edu.poli.contexto1.vista;
 
 import co.edu.poli.contexto1.model.*;
+import co.edu.poli.contexto1.servicios.ImplementacionOperacionCRUD;
 
 public class Principal {
 
-    // ---------------------------------------------------------------
-    // PUNTO 2 - MÉTODO POLIMÓRFICO QUE RECIBE Persona como parámetro:
-    // Aunque el parámetro es Persona, Java ejecuta en tiempo de ejecución
-    // el calcularImc() real del objeto que se pase (Usuario o Instructor)
-    // ---------------------------------------------------------------
+    // PUNTO 2 - MÉTODO POLIMÓRFICO QUE RECIBE Persona como parámetro
     public static void mostrarImc(Persona p) {
         System.out.println("   [" + p.getClass().getSimpleName() + "] "
                 + p.getNombre() + " -> IMC: " + String.format("%.4f", p.calcularImc()));
     }
 
-    // ---------------------------------------------------------------
-    // PUNTO 2 - MÉTODO POLIMÓRFICO QUE RETORNA tipo Persona:
-    // Internamente crea un Instructor pero lo retorna como Persona
-    // ---------------------------------------------------------------
+    // PUNTO 2 - MÉTODO POLIMÓRFICO QUE RETORNA tipo Persona
     public static Persona crearPersona(String nombre, String id, double peso,
                                         double estatura, int edad, String grupoSanguineo,
                                         String certificado, String correo) {
@@ -91,7 +85,6 @@ public class Principal {
 
         // ---------------------------------------------------------------
         // PUNTO 5: CREACIÓN Y PRESENTACIÓN POR CONSOLA DE OBJETOS
-        //          TIPO REGISTRO Y TURNO
         // ---------------------------------------------------------------
         System.out.println("\n--- PUNTO 5: OBJETOS TIPO REGISTRO Y TURNO ---\n");
 
@@ -99,8 +92,8 @@ public class Principal {
         Usuario usuario3 = new Usuario("María Ruiz", "3003", 55.0, 1.58, 32, "AB+", null);
 
         Registro registro1 = new Registro(usuario1, "ana@email.com", "Calle 10 #20-30", 300123, "Colombia");
-        Registro registro2 = new Registro(usuario2, "pedro@email.com", "Av. Principal #5-15", 31043, "Colombia");
-        Registro registro3 = new Registro(usuario3, "maria@email.com", "Carrera 7 #45-60", 324321, "Colombia");
+        Registro registro2 = new Registro(usuario2, "pedro@email.com", "Av. Principal #5-15", 31098, "Colombia");
+        Registro registro3 = new Registro(usuario3, "maria@email.com", "Carrera 7 #45-60", 320765, "Colombia");
 
         System.out.println(">> Objetos tipo REGISTRO creados:");
         System.out.println("   " + registro1);
@@ -124,9 +117,6 @@ public class Principal {
 
         // ---------------------------------------------------------------
         // NUEVO PUNTO 1: ARREGLO DE TIPO SUPERSUPERCLASE Persona[5]
-        //   - 5 posiciones, 3 objetos de las subclases (Usuario e Instructor)
-        //   - Se imprime calcularImc() evidenciando la sobreescritura:
-        //     Instructor usa su versión (*0.95), Usuario usa la de Persona
         // ---------------------------------------------------------------
         System.out.println("\n--- NUEVO PUNTO 1: ARREGLO Persona[5] ---\n");
 
@@ -149,35 +139,26 @@ public class Principal {
         }
 
         // ---------------------------------------------------------------
-        // NUEVO PUNTO 2: INVOCACIÓN DE LOS DOS MÉTODOS POLIMÓRFICOS
-        //   - mostrarImc(Persona p): definido arriba, recibe Persona
-        //   - crearPersona(...): definido arriba, retorna Persona
+        // NUEVO PUNTO 2: MÉTODOS POLIMÓRFICOS
         // ---------------------------------------------------------------
         System.out.println("\n--- NUEVO PUNTO 2: MÉTODOS POLIMÓRFICOS ---\n");
 
-        System.out.println(">> mostrarImc(Persona p) - recibe supersuperclase como parámetro:");
-        mostrarImc(personas[0]); // Usuario  -> calcularImc() de Persona
-        mostrarImc(personas[1]); // Instructor -> calcularImc() sobreescrito *0.95
-        mostrarImc(personas[2]); // Usuario  -> calcularImc() de Persona
+        System.out.println(">> mostrarImc(Persona p):");
+        mostrarImc(personas[0]);
+        mostrarImc(personas[1]);
+        mostrarImc(personas[2]);
 
-        System.out.println("\n>> crearPersona() - retorna tipo Persona, objeto real es Instructor:");
+        System.out.println("\n>> crearPersona() retorna tipo Persona, objeto real es Instructor:");
         Persona nueva = crearPersona("Roberto Díaz", "8001", 82.0, 1.78, 36, "O-", "CERT-003", "roberto@gym.com");
         System.out.println("   Tipo declarado : Persona");
         System.out.println("   Tipo real      : " + nueva.getClass().getSimpleName());
-        System.out.println("   calcularImc()  : " + String.format("%.4f", nueva.calcularImc())
-                + " (sobreescrito *0.95)");
+        System.out.println("   calcularImc()  : " + String.format("%.4f", nueva.calcularImc()) + " (sobreescrito *0.95)");
 
         // ---------------------------------------------------------------
         // NUEVO PUNTO 3: EVIDENCIA DE final
-        //
-        //   ATRIBUTO FINAL  -> Persona.java: private final String grupoSanguineo
-        //                      No tiene setter, no puede modificarse tras crearse
-        //
-        //   MÉTODO FINAL    -> Instructor.java: public final String toString()
-        //                      Ninguna subclase de Instructor puede sobreescribirlo
-        //
-        //   CLASE FINAL     -> UsuarioVip.java: final class UsuarioVip
-        //                      Ninguna clase puede hacer extends UsuarioVip
+        //   ATRIBUTO FINAL -> Persona.java: private final String grupoSanguineo
+        //   MÉTODO FINAL   -> Instructor.java: public final String toString()
+        //   CLASE FINAL    -> UsuarioVip.java: final class UsuarioVip
         // ---------------------------------------------------------------
         System.out.println("\n--- NUEVO PUNTO 3: ATRIBUTO FINAL, MÉTODO FINAL, CLASE FINAL ---\n");
 
@@ -191,5 +172,98 @@ public class Principal {
         System.out.println("\n>> Clase final UsuarioVip (UsuarioVip.java):");
         System.out.println("   final class UsuarioVip -> no puede ser heredada");
 
+        // ---------------------------------------------------------------
+        // CRUD: OPERACIONES SOBRE ImplementacionOperacionCRUD
+        // Arreglo inicial tamaño 2, crece dinámicamente si se llena.
+        // Crear inserta en el primer null de izquierda a derecha.
+        // Leer, modificar y eliminar operan por ID del objeto.
+        // ---------------------------------------------------------------
+        System.out.println("\n=============================================================");
+        System.out.println("       CRUD - ImplementacionOperacionCRUD");
+        System.out.println("=============================================================\n");
+
+        ImplementacionOperacionCRUD crud = new ImplementacionOperacionCRUD();
+
+        // --- CREAR ---
+        System.out.println("--- CREAR ---\n");
+
+        // Inserta en posicion [0]
+        System.out.println(crud.crear(new Usuario("Ana Torres", "101", 60.0, 1.62, 25, "B+", null)));
+        // Inserta en posicion [1]
+        System.out.println(crud.crear(new Instructor("Juan Pérez", "102", 75.0, 1.78, 35, "O+", "CERT-010", "juan@gym.com")));
+        // Arreglo lleno, crece y agrega en posicion [2]
+        System.out.println(crud.crear(new Usuario("Lucas Mora", "103", 70.0, 1.70, 29, "A-", null)));
+        // ID duplicado: debe mostrar error
+        System.out.println(crud.crear(new Usuario("Copia", "101", 50.0, 1.55, 20, "AB+", null)));
+
+        // --- LEER TODOS ---
+        System.out.println("\n--- LEER TODOS ---\n");
+        Persona[] todos = crud.leerTodos();
+        for (int i = 0; i < todos.length; i++) {
+            if (todos[i] != null) {
+                System.out.println("   [" + i + "] " + todos[i].obtenerInfo());
+            } else {
+                System.out.println("   [" + i + "] null");
+            }
+        }
+
+        // --- LEER POR ÍNDICE ---
+        System.out.println("\n--- LEER POR ÍNDICE ---\n");
+        Persona leido = crud.leer(1);
+        System.out.println("   leer(1) -> " + (leido != null ? leido.obtenerInfo() : "null"));
+        Persona fueraRango = crud.leer(10);
+        System.out.println("   leer(10) -> " + (fueraRango != null ? fueraRango.obtenerInfo() : "Indice fuera de rango"));
+
+        // --- MODIFICAR POR ID ---
+        System.out.println("\n--- MODIFICAR POR ID ---\n");
+        // Modifica el objeto con ID 102
+        System.out.println(crud.modificar(102, new Instructor("Juan Pérez Actualizado", "102", 78.0, 1.80, 36, "O+", "CERT-010-NEW", "juan_new@gym.com")));
+        // ID que no existe
+        System.out.println(crud.modificar(999, new Usuario("No existe", "999", 50.0, 1.60, 20, "A+", null)));
+
+        // --- LEER TODOS TRAS MODIFICAR ---
+        System.out.println("\n--- ESTADO TRAS MODIFICAR ---\n");
+        todos = crud.leerTodos();
+        for (int i = 0; i < todos.length; i++) {
+            if (todos[i] != null) {
+                System.out.println("   [" + i + "] " + todos[i].obtenerInfo());
+            } else {
+                System.out.println("   [" + i + "] null");
+            }
+        }
+
+        // --- ELIMINAR POR ID ---
+        System.out.println("\n--- ELIMINAR POR ID ---\n");
+        // Elimina el objeto con ID 101
+        System.out.println(crud.eliminar(0, 101));
+        // ID que no existe
+        System.out.println(crud.eliminar(0, 999));
+
+        // --- LEER TODOS TRAS ELIMINAR ---
+        System.out.println("\n--- ESTADO TRAS ELIMINAR ---\n");
+        todos = crud.leerTodos();
+        for (int i = 0; i < todos.length; i++) {
+            if (todos[i] != null) {
+                System.out.println("   [" + i + "] " + todos[i].obtenerInfo());
+            } else {
+                System.out.println("   [" + i + "] null");
+            }
+        }
+
+        // --- CREAR EN EL NULL QUE DEJÓ LA ELIMINACIÓN ---
+        System.out.println("\n--- CREAR TRAS ELIMINACIÓN (debe ocupar el null liberado) ---\n");
+        System.out.println(crud.crear(new Usuario("Nuevo Usuario", "104", 65.0, 1.68, 27, "B-", null)));
+        todos = crud.leerTodos();
+        for (int i = 0; i < todos.length; i++) {
+            if (todos[i] != null) {
+                System.out.println("   [" + i + "] " + todos[i].obtenerInfo());
+            } else {
+                System.out.println("   [" + i + "] null");
+            }
+        }
+
+        System.out.println("\n=============================================================");
+        System.out.println("       FIN DE EJECUCIÓN");
+        System.out.println("=============================================================");
     }
 }

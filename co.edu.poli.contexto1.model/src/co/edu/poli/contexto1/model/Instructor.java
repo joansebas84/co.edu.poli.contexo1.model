@@ -11,10 +11,15 @@ public class Instructor extends Persona {
         this.correo = correo;
     }
 
-    // Sobreescritura del método calcularImc con factor de ajuste para instructor
     @Override
     public double calcularImc() {
         return (getPeso() / (getEstatura() * getEstatura())) * 0.95;
+    }
+
+    @Override
+    public String obtenerInfo() {
+        return "Instructor | ID: " + getId() + " | Nombre: " + getNombre()
+                + " | Certificado: " + certificado + " | Correo: " + correo;
     }
 
     public String getCertificado() { return certificado; }

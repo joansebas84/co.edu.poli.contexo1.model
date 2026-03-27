@@ -10,7 +10,6 @@ public class Turno extends Persona {
     private Maquina maquina;
     private Instructor instructor;
     private String hora;
-    // Atributo estático: capacidad máxima del turno (compartido por todos los turnos)
     private static int capacidadMaxima = 10;
 
     public Turno(String nombre, String id, double peso, double estatura, int edad,
@@ -27,19 +26,19 @@ public class Turno extends Persona {
         this.hora = hora;
     }
 
+    @Override
+    public String obtenerInfo() {
+        return "Turno | ID: " + getId() + " | Dia: " + dia + " | Hora: " + hora
+                + " | Lugar: " + lugar + " | Estado: " + estado;
+    }
+
     public boolean quedanCupos() {
         int registrosActuales = (registro != null) ? registro.length : 0;
         return registrosActuales < capacidadMaxima;
     }
 
-    // Getter y Setter del atributo estático
-    public static int getCapacidadMaxima() {
-        return capacidadMaxima;
-    }
-
-    public static void setCapacidadMaxima(int nuevaCapacidad) {
-        capacidadMaxima = nuevaCapacidad;
-    }
+    public static int getCapacidadMaxima() { return capacidadMaxima; }
+    public static void setCapacidadMaxima(int nuevaCapacidad) { capacidadMaxima = nuevaCapacidad; }
 
     public String getDia() { return dia; }
     public void setDia(String dia) { this.dia = dia; }

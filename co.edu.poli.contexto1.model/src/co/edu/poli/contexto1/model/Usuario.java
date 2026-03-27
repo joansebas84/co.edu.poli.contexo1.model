@@ -9,6 +9,12 @@ public class Usuario extends Persona {
         this.enfermedad = enfermedad;
     }
 
+    @Override
+    public String obtenerInfo() {
+        return "Usuario | ID: " + getId() + " | Nombre: " + getNombre()
+                + " | Edad: " + getEdad() + " | Grupo: " + getGrupoSanguineo();
+    }
+
     public Enfermedad[] getEnfermedad() { return enfermedad; }
     public void setEnfermedad(Enfermedad[] enfermedad) { this.enfermedad = enfermedad; }
 
