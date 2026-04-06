@@ -75,7 +75,7 @@ public class Principal {
 
         System.out.println("\nModificando capacidadMaxima a 20 usando Turno.setCapacidadMaxima(20)...");
         Turno.setCapacidadMaxima(20);
-
+        System.out.println("hola");
         System.out.println("\nValor DESPUÉS de modificar (todos los objetos reflejan el cambio):");
         System.out.println("   turno1 -> " + Turno.getCapacidadMaxima());
         System.out.println("   turno2 -> " + Turno.getCapacidadMaxima());
