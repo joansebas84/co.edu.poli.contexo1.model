@@ -9,6 +9,7 @@ import co.edu.poli.contexto1.model.Persona;
  *
  * @author Joan Florez
  * @version 1.0
+ * @since 2026
  */
 public interface OperacionCRUD {
 
@@ -19,8 +20,9 @@ public interface OperacionCRUD {
      *
      * @param persona objeto a insertar
      * @return mensaje indicando el resultado de la operación
+     * @throws IllegalArgumentException si el objeto es null o el ID ya existe
      */
-    String crear(Persona persona);
+    String crear(Persona persona) throws IllegalArgumentException;
 
     /**
      * Lee y retorna el objeto en la posición indicada del arreglo.
@@ -43,8 +45,10 @@ public interface OperacionCRUD {
      * @param id      ID del objeto a modificar
      * @param persona nuevo objeto con los datos actualizados
      * @return mensaje indicando el resultado de la operación
+     * @throws IllegalArgumentException si el nuevo objeto es null
+     * @throws IllegalStateException    si no existe ningún objeto con ese ID
      */
-    String modificar(String id, Persona persona);
+    String modificar(String id, Persona persona) throws IllegalArgumentException, IllegalStateException;
 
     /**
      * Elimina el objeto cuyo ID coincide con el parámetro {@code id},
@@ -52,6 +56,7 @@ public interface OperacionCRUD {
      *
      * @param id ID del objeto a eliminar
      * @return mensaje indicando el resultado de la operación
+     * @throws IllegalStateException si no existe ningún objeto con ese ID
      */
-    String eliminar(String id);
+    String eliminar(String id) throws IllegalStateException;
 }

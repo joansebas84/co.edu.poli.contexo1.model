@@ -18,6 +18,36 @@ public class Principal {
         return new Instructor(nombre, id, peso, estatura, edad, grupoSanguineo, certificado, correo);
     }
 
+    // Método auxiliar: pide un double y repite hasta que sea válido
+    public static double leerDouble(java.util.Scanner sc, String mensaje) {
+        while (true) {
+            System.out.print(mensaje);
+            try {
+                double valor = sc.nextDouble();
+                sc.nextLine();
+                return valor;
+            } catch (java.util.InputMismatchException e) {
+                sc.nextLine();
+                System.out.println("   Dato no valido, ingrese un numero decimal.");
+            }
+        }
+    }
+
+    // Método auxiliar: pide un int y repite hasta que sea válido
+    public static int leerInt(java.util.Scanner sc, String mensaje) {
+        while (true) {
+            System.out.print(mensaje);
+            try {
+                int valor = sc.nextInt();
+                sc.nextLine();
+                return valor;
+            } catch (java.util.InputMismatchException e) {
+                sc.nextLine();
+                System.out.println("   Dato no valido, ingrese un numero entero.");
+            }
+        }
+    }
+
     public static void main(String[] args) {
 
         // =============================================================
@@ -197,39 +227,41 @@ public class Principal {
             System.out.println("  5. Eliminar por ID  6. Serializar");
             System.out.println("  7. Deserializar     0. Salir");
             System.out.println("---------------------------------------------");
-            System.out.print("Ingrese una opcion: ");
-            opcion = sc.nextInt();
-            sc.nextLine(); // limpiar buffer
+            opcion = leerInt(sc, "Ingrese una opcion: ");
 
             switch (opcion) {
 
                 case 1:
-                    System.out.println("\n-- CREAR --");
-                    System.out.print("Tipo (1=Usuario / 2=Instructor): ");
-                    int tipo = sc.nextInt(); sc.nextLine();
-                    System.out.print("Nombre: ");
-                    String nombre = sc.nextLine();
-                    System.out.print("ID: ");
-                    String id = sc.nextLine();
-                    System.out.print("Peso: ");
-                    double peso = sc.nextDouble();
-                    System.out.print("Estatura: ");
-                    double estatura = sc.nextDouble();
-                    System.out.print("Edad: ");
-                    int edad = sc.nextInt(); sc.nextLine();
-                    System.out.print("Grupo sanguineo: ");
-                    String grupo = sc.nextLine();
+                    try {
+                        System.out.println("\n-- CREAR --");
+                        int tipo;
+                        while (true) {
+                            tipo = leerInt(sc, "Tipo (1=Usuario / 2=Instructor): ");
+                            if (tipo == 1 || tipo == 2) break;
+                            System.out.println("   Tipo no valido. Ingrese 1 para Usuario o 2 para Instructor.");
+                        }
 
-                    if (tipo == 1) {
-                        System.out.println(crud.crear(new Usuario(nombre, id, peso, estatura, edad, grupo, null)));
-                    } else if (tipo == 2) {
-                        System.out.print("Certificado: ");
-                        String cert = sc.nextLine();
-                        System.out.print("Correo: ");
-                        String correoInst = sc.nextLine();
-                        System.out.println(crud.crear(new Instructor(nombre, id, peso, estatura, edad, grupo, cert, correoInst)));
-                    } else {
-                        System.out.println("Tipo no valido.");
+                        System.out.print("Nombre: ");
+                        String nombre = sc.nextLine();
+                        System.out.print("ID: ");
+                        String id = sc.nextLine();
+                        double peso     = leerDouble(sc, "Peso: ");
+                        double estatura = leerDouble(sc, "Estatura: ");
+                        int edad        = leerInt(sc, "Edad: ");
+                        System.out.print("Grupo sanguineo: ");
+                        String grupo = sc.nextLine();
+
+                        if (tipo == 1) {
+                            System.out.println(crud.crear(new Usuario(nombre, id, peso, estatura, edad, grupo, null)));
+                        } else {
+                            System.out.print("Certificado: ");
+                            String cert = sc.nextLine();
+                            System.out.print("Correo: ");
+                            String correoInst = sc.nextLine();
+                            System.out.println(crud.crear(new Instructor(nombre, id, peso, estatura, edad, grupo, cert, correoInst)));
+                        }
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Error al crear: " + e.getMessage());
                     }
                     break;
 
@@ -243,47 +275,89 @@ public class Principal {
 
                 case 3:
                     System.out.println("\n-- LEER POR ÍNDICE --");
-                    System.out.print("Ingrese el indice: ");
-                    int indice = sc.nextInt(); sc.nextLine();
-                    Persona leido = crud.leer(indice);
-                    System.out.println(leido != null ? "   " + leido.obtenerInfo() : "   Indice fuera de rango o posicion vacia.");
+                    while (true) {
+                        int indice = leerInt(sc, "Ingrese el indice: ");
+                        Persona leido = crud.leer(indice);
+                        if (leido != null) {
+                            System.out.println("   " + leido.obtenerInfo());
+                            break;
+                        } else {
+                            System.out.println("   Indice fuera de rango o posicion vacia, intente de nuevo.");
+                        }
+                    }
                     break;
 
                 case 4:
-                    System.out.println("\n-- MODIFICAR POR ID --");
-                    System.out.print("ID del objeto a modificar: ");
-                    String idMod = sc.nextLine();
-                    System.out.print("Tipo del nuevo objeto (1=Usuario / 2=Instructor): ");
-                    int tipoMod = sc.nextInt(); sc.nextLine();
-                    System.out.print("Nuevo nombre: ");
-                    String nomMod = sc.nextLine();
-                    System.out.print("Nuevo peso: ");
-                    double pesoMod = sc.nextDouble();
-                    System.out.print("Nueva estatura: ");
-                    double estMod = sc.nextDouble();
-                    System.out.print("Nueva edad: ");
-                    int edadMod = sc.nextInt(); sc.nextLine();
-                    System.out.print("Nuevo grupo sanguineo: ");
-                    String grupoMod = sc.nextLine();
+                    try {
+                        System.out.println("\n-- MODIFICAR POR ID --");
+                        String idMod;
+                        while (true) {
+                            System.out.print("ID del objeto a modificar: ");
+                            idMod = sc.nextLine();
+                            // Verificar que el ID existe antes de continuar
+                            boolean encontrado = false;
+                            for (Persona p : crud.leerTodos()) {
+                                if (p != null && p.getId().equals(idMod)) {
+                                    encontrado = true;
+                                    break;
+                                }
+                            }
+                            if (encontrado) break;
+                            System.out.println("   No existe ningún objeto con ID " + idMod + ", intente de nuevo.");
+                        }
 
-                    if (tipoMod == 1) {
-                        System.out.println(crud.modificar(idMod, new Usuario(nomMod, idMod, pesoMod, estMod, edadMod, grupoMod, null)));
-                    } else if (tipoMod == 2) {
-                        System.out.print("Certificado: ");
-                        String certMod = sc.nextLine();
-                        System.out.print("Correo: ");
-                        String correoMod = sc.nextLine();
-                        System.out.println(crud.modificar(idMod, new Instructor(nomMod, idMod, pesoMod, estMod, edadMod, grupoMod, certMod, correoMod)));
-                    } else {
-                        System.out.println("Tipo no valido.");
+                        int tipoMod;
+                        while (true) {
+                            tipoMod = leerInt(sc, "Tipo del nuevo objeto (1=Usuario / 2=Instructor): ");
+                            if (tipoMod == 1 || tipoMod == 2) break;
+                            System.out.println("   Tipo no valido. Ingrese 1 para Usuario o 2 para Instructor.");
+                        }
+
+                        System.out.print("Nuevo nombre: ");
+                        String nomMod = sc.nextLine();
+                        double pesoMod = leerDouble(sc, "Nuevo peso: ");
+                        double estMod  = leerDouble(sc, "Nueva estatura: ");
+                        int edadMod    = leerInt(sc, "Nueva edad: ");
+                        System.out.print("Nuevo grupo sanguineo: ");
+                        String grupoMod = sc.nextLine();
+
+                        if (tipoMod == 1) {
+                            System.out.println(crud.modificar(idMod, new Usuario(nomMod, idMod, pesoMod, estMod, edadMod, grupoMod, null)));
+                        } else {
+                            System.out.print("Certificado: ");
+                            String certMod = sc.nextLine();
+                            System.out.print("Correo: ");
+                            String correoMod = sc.nextLine();
+                            System.out.println(crud.modificar(idMod, new Instructor(nomMod, idMod, pesoMod, estMod, edadMod, grupoMod, certMod, correoMod)));
+                        }
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Error al modificar: " + e.getMessage());
+                    } catch (IllegalStateException e) {
+                        System.out.println("Error al modificar: " + e.getMessage());
                     }
                     break;
 
                 case 5:
-                    System.out.println("\n-- ELIMINAR POR ID --");
-                    System.out.print("ID del objeto a eliminar: ");
-                    String idElim = sc.nextLine();
-                    System.out.println(crud.eliminar(idElim));
+                    try {
+                        System.out.println("\n-- ELIMINAR POR ID --");
+                        String idElim;
+                        while (true) {
+                            System.out.print("ID del objeto a eliminar: ");
+                            idElim = sc.nextLine();
+                            boolean encontrado = false;
+                            for (Persona p : crud.leerTodos()) {
+                                if (p != null && p.getId().equals(idElim)) {
+                                    encontrado = true;
+                                    break;
+                                }
+                            }
+                            if (encontrado) break;
+                            System.out.println("   No existe ningún objeto con ID " + idElim + ", intente de nuevo.");
+                        }
+                        System.out.println(crud.eliminar(idElim));
+                    } catch (IllegalStateException e) {
+                        System.out.println("Error al eliminar: " + e.getMessage());
+                    }
                     break;
 
                 case 6:

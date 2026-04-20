@@ -18,6 +18,7 @@ import java.io.IOException;
  *
  * @author Joan Florez
  * @version 1.0
+ * @since 2026
  */
 public class ImplementacionOperacionCRUD implements OperacionCRUD, OperacionArchivo {
 
@@ -38,19 +39,19 @@ public class ImplementacionOperacionCRUD implements OperacionCRUD, OperacionArch
     /**
      * Inserta en el primer null de izquierda a derecha.
      * Si está lleno, amplía el arreglo en una posición.
-     * Valida null e ID duplicado.
      *
      * @param persona objeto a insertar
      * @return mensaje con el resultado
+     * @throws IllegalArgumentException si el objeto es null o el ID ya existe
      */
     @Override
-    public String crear(Persona persona) {
+    public String crear(Persona persona) throws IllegalArgumentException {
         if (persona == null) {
-            return "Error: no se puede insertar un objeto null.";
+            throw new IllegalArgumentException("No se puede insertar un objeto null.");
         }
         for (Persona p : arregloObjetos) {
             if (p != null && p.getId().equals(persona.getId())) {
-                return "Error: ya existe un objeto con ID " + persona.getId() + ".";
+                throw new IllegalArgumentException("Ya existe un objeto con ID " + persona.getId() + ".");
             }
         }
         for (int i = 0; i < arregloObjetos.length; i++) {
@@ -102,11 +103,13 @@ public class ImplementacionOperacionCRUD implements OperacionCRUD, OperacionArch
      * @param id      ID del objeto a modificar
      * @param persona nuevo objeto
      * @return mensaje con el resultado
+     * @throws IllegalArgumentException si el nuevo objeto es null
+     * @throws IllegalStateException    si no existe ningún objeto con ese ID
      */
     @Override
-    public String modificar(String id, Persona persona) {
+    public String modificar(String id, Persona persona) throws IllegalArgumentException, IllegalStateException {
         if (persona == null) {
-            return "Error: el nuevo objeto no puede ser null.";
+            throw new IllegalArgumentException("El nuevo objeto no puede ser null.");
         }
         for (int i = 0; i < arregloObjetos.length; i++) {
             if (arregloObjetos[i] != null && arregloObjetos[i].getId().equals(id)) {
@@ -116,7 +119,7 @@ public class ImplementacionOperacionCRUD implements OperacionCRUD, OperacionArch
                         + "\n   Ahora : " + persona.obtenerInfo();
             }
         }
-        return "Error: no se encontró ningún objeto con ID " + id + ".";
+        throw new IllegalStateException("No se encontró ningún objeto con ID " + id + ".");
     }
 
     // ELIMINAR POR ID
@@ -125,9 +128,10 @@ public class ImplementacionOperacionCRUD implements OperacionCRUD, OperacionArch
      *
      * @param id ID del objeto a eliminar
      * @return mensaje con el resultado
+     * @throws IllegalStateException si no existe ningún objeto con ese ID
      */
     @Override
-    public String eliminar(String id) {
+    public String eliminar(String id) throws IllegalStateException {
         for (int i = 0; i < arregloObjetos.length; i++) {
             if (arregloObjetos[i] != null && arregloObjetos[i].getId().equals(id)) {
                 String info = arregloObjetos[i].obtenerInfo();
@@ -135,7 +139,7 @@ public class ImplementacionOperacionCRUD implements OperacionCRUD, OperacionArch
                 return "Eliminado correctamente. Posicion [" + i + "] -> null\n   Era: " + info;
             }
         }
-        return "Error: no se encontró ningún objeto con ID " + id + ".";
+        throw new IllegalStateException("No se encontró ningún objeto con ID " + id + ".");
     }
 
     // SERIALIZAR: guarda el arreglo en archivo de texto
@@ -184,13 +188,11 @@ public class ImplementacionOperacionCRUD implements OperacionCRUD, OperacionArch
     @Override
     public Persona[] deserializar() {
         try (BufferedReader br = new BufferedReader(new FileReader(ARCHIVO))) {
-            // Contar líneas para saber el tamaño del arreglo
             int lineas = 0;
             while (br.readLine() != null) lineas++;
 
             Persona[] resultado = new Persona[lineas];
 
-            // Releer el archivo para construir los objetos
             try (BufferedReader br2 = new BufferedReader(new FileReader(ARCHIVO))) {
                 String linea;
                 int i = 0;
@@ -201,24 +203,24 @@ public class ImplementacionOperacionCRUD implements OperacionCRUD, OperacionArch
                         String[] partes = linea.split(";");
                         if (partes[0].equals("Usuario")) {
                             resultado[i] = new Usuario(
-                                    partes[2],                  // nombre
-                                    partes[1],                  // id
-                                    Double.parseDouble(partes[3]),  // peso
-                                    Double.parseDouble(partes[4]),  // estatura
-                                    Integer.parseInt(partes[5]),    // edad
-                                    partes[6],                  // grupoSanguineo
+                                    partes[2],
+                                    partes[1],
+                                    Double.parseDouble(partes[3]),
+                                    Double.parseDouble(partes[4]),
+                                    Integer.parseInt(partes[5]),
+                                    partes[6],
                                     null
                             );
                         } else if (partes[0].equals("Instructor")) {
                             resultado[i] = new Instructor(
-                                    partes[2],                  // nombre
-                                    partes[1],                  // id
-                                    Double.parseDouble(partes[3]),  // peso
-                                    Double.parseDouble(partes[4]),  // estatura
-                                    Integer.parseInt(partes[5]),    // edad
-                                    partes[6],                  // grupoSanguineo
-                                    partes[7],                  // certificado
-                                    partes[8]                   // correo
+                                    partes[2],
+                                    partes[1],
+                                    Double.parseDouble(partes[3]),
+                                    Double.parseDouble(partes[4]),
+                                    Integer.parseInt(partes[5]),
+                                    partes[6],
+                                    partes[7],
+                                    partes[8]
                             );
                         }
                     }
@@ -228,7 +230,6 @@ public class ImplementacionOperacionCRUD implements OperacionCRUD, OperacionArch
             arregloObjetos = resultado;
             return arregloObjetos;
         } catch (IOException e) {
-            // Si el archivo no existe aún, se retorna el arreglo vacío actual
             return arregloObjetos;
         }
     }

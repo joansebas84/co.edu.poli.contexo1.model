@@ -1,0 +1,2 @@
+Usuario;jdsad45;joan;67.0;50.0;56;ajds2
+null
